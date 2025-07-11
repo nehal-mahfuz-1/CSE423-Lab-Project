@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cut the Birthday Cake! 🎂</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Emilys+Candy&family=Jolly+Lodger&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f5f5dc, #faf0e6, #fff8dc);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: default;
+            position: relative;
+        }
+
+        /* Background Images */
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+            z-index: -1;
+            transition: opacity 1s ease;
+        }
+
+        .bg-before {
+            background: url('before.jpg') no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .bg-after {
+            background: url('after.jpg') no-repeat;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+        }
+
+        .bg-after.show {
+            opacity: 0.8;
+        }
+
+        .bg-before.hide {
+            opacity: 0;
+        }
+
+        /* Realistic Knife Cursor */
+        .knife-cursor {
+            cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><defs><linearGradient id="blade" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23E8E8E8"/><stop offset="50%" stop-color="%23C0C0C0"/><stop offset="100%" stop-color="%23A0A0A0"/></linearGradient><linearGradient id="handle" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="%23654321"/><stop offset="50%" stop-color="%238B4513"/><stop offset="100%" stop-color="%23A0522D"/></linearGradient></defs><path d="M5 55L45 15L50 10L55 15L15 55L10 50Z" fill="url(%23blade)" stroke="%23808080" stroke-width="1"/><ellipse cx="12.5" cy="52.5" rx="8" ry="3" fill="url(%23handle)"/><rect x="8" y="50" width="10" height="6" rx="3" fill="url(%23handle)"/></svg>') 30 30, pointer !important;
+        }
+
+        .cake-container {
+            position: relative;
+            transform: scale(1.2) translateY(80px);
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+        }
+
+        /* Realistic Chocolate Cake */
+        .cake {
+            position: relative;
+            width: 350px;
+            height: 280px;
+            margin: 0 auto;
+        }
+
+        /* Cake Base (Plate) */
+        .cake-plate {
+            position: absolute;
+            bottom: -25px;
+            left: -40px;
+            width: 430px;
+            height: 35px;
+            background: linear-gradient(135deg, #f8f8f8, #e0e0e0, #d0d0d0);
+            border-radius: 50%;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.25),
+                inset 0 2px 5px rgba(255,255,255,0.8);
+            border: 2px solid #ccc;
+        }
+
+        /* Bottom Layer - More Realistic */
+        .cake-layer-bottom {
+            position: absolute;
+            bottom: 0;
+            width: 350px;
+            height: 140px;
+            background: linear-gradient(135deg, #4A2C17, #6B3E20, #8B4513, #A0522D);
+            border-radius: 15px;
+            box-shadow: 
+                inset 0 -15px 25px rgba(0,0,0,0.4),
+                inset 0 15px 25px rgba(255,255,255,0.1),
+                0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid #654321;
+        }
+
+        /* Realistic Chocolate Frosting Bottom */
+        .frosting-bottom {
+            position: absolute;
+            top: -20px;
+            left: -15px;
+            width: 380px;
+            height: 35px;
+            background: linear-gradient(135deg, #3C2415, #5D3A1A, #654321);
+            border-radius: 50%;
+            box-shadow: 
+                0 8px 15px rgba(0,0,0,0.4),
+                inset 0 3px 8px rgba(255,255,255,0.1);
+        }
+
+        /* Frosting drips */
+        .frosting-bottom::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50px;
+            width: 20px;
+            height: 25px;
+            background: linear-gradient(135deg, #3C2415, #5D3A1A);
+            border-radius: 0 0 50% 50%;
+        }
+
+        .frosting-bottom::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            right: 80px;
+            width: 15px;
+            height: 20px;
+            background: linear-gradient(135deg, #3C2415, #5D3A1A);
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* Top Layer - More Realistic */
+        .cake-layer-top {
+            position: absolute;
+            bottom: 120px;
+            left: 30px;
+            width: 290px;
+            height: 110px;
+            background: linear-gradient(135deg, #4A2C17, #6B3E20, #8B4513, #A0522D);
+            border-radius: 12px;
+            box-shadow: 
+                inset 0 -12px 20px rgba(0,0,0,0.4),
+                inset 0 12px 20px rgba(255,255,255,0.1),
+                0 8px 20px rgba(0,0,0,0.3);
+            border: 1px solid #654321;
+        }
+
+        /* Realistic Chocolate Frosting Top */
+        .frosting-top {
+            position: absolute;
+            top: -15px;
+            left: -12px;
+            width: 314px;
+            height: 28px;
+            background: linear-gradient(135deg, #3C2415, #5D3A1A, #654321);
+            border-radius: 50%;
+            box-shadow: 
+                0 6px 12px rgba(0,0,0,0.4),
+                inset 0 2px 6px rgba(255,255,255,0.1);
+        }
+
+        /* Cake Decorations - Cherries */
+        .decoration {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, #FF6B6B, #DC143C, #8B0000);
+            border-radius: 50%;
+            box-shadow: 
+                0 3px 6px rgba(0,0,0,0.3),
+                inset -2px -2px 4px rgba(0,0,0,0.2),
+                inset 2px 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .decoration::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: #228B22;
+            border-radius: 2px;
+        }
+
+        .decoration:nth-child(1) { top: 25px; left: 50px; }
+        .decoration:nth-child(2) { top: 40px; left: 100px; }
+        .decoration:nth-child(3) { top: 30px; left: 150px; }
+        .decoration:nth-child(4) { top: 45px; left: 200px; }
+        .decoration:nth-child(5) { top: 35px; left: 230px; }
+
+        /* Artistic Candle - More Realistic */
+        .candle {
+            position: absolute;
+            top: -55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 80px;
+            background: linear-gradient(45deg, 
+                #FFD700 0%, 
+                #FFA500 25%, 
+                #FF6347 50%, 
+                #FF1493 75%, 
+                #9370DB 100%);
+            border-radius: 8px;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.4),
+                inset 2px 0 4px rgba(255,255,255,0.3),
+                inset -2px 0 4px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .candle::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 12px;
+            background: linear-gradient(to bottom, #2C1810, #1A0F0A);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* More Realistic Flame - Bigger Size */
+        .flame {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 38px;
+            background: radial-gradient(ellipse 40% 60% at 50% 90%, 
+                #1E90FF 0%, 
+                #00BFFF 15%, 
+                #FFD700 30%, 
+                #FFA500 50%, 
+                #FF6347 70%, 
+                #DC143C 85%, 
+                #8B0000 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            cursor: pointer;
+            animation: realisticFlicker 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+            filter: blur(0.5px);
+        }
+
+        .flame:hover {
+            transform: translateX(-50%) scale(1.15);
+            animation-duration: 0.8s;
+            filter: blur(0.3px);
+        }
+
+        .flame.blown {
+            opacity: 0;
+            transform: translateX(-50%) scale(0) translateY(-10px);
+            transition: all 0.8s ease-out;
+        }
+
+        @keyframes realisticFlicker {
+            0% {
+                transform: translateX(-50%) rotate(-3deg) scale(1);
+                box-shadow: 0 0 35px #FFD700, 0 0 50px #FF6347;
+            }
+            25% {
+                transform: translateX(-50%) rotate(2deg) scale(1.08);
+                box-shadow: 0 0 45px #FFA500, 0 0 60px #DC143C;
+            }
+            50% {
+                transform: translateX(-50%) rotate(-1deg) scale(0.95);
+                box-shadow: 0 0 40px #FFD700, 0 0 55px #FF6347;
+            }
+            75% {
+                transform: translateX(-50%) rotate(3deg) scale(1.05);
+                box-shadow: 0 0 50px #FFA500, 0 0 65px #8B0000;
+            }
+            100% {
+                transform: translateX(-50%) rotate(-2deg) scale(1);
+                box-shadow: 0 0 35px #FFD700, 0 0 50px #FF6347;
+            }
+        }
+
+        /* Cut Line */
+        .cut-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #8B4513, #654321);
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .cut-line.show {
+            opacity: 1;
+        }
+
+        /* Cake pieces animation */
+        .cake-piece-left {
+            transform-origin: right center;
+            transition: transform 1s ease-out;
+        }
+
+        .cake-piece-right {
+            transform-origin: left center;
+            transition: transform 1s ease-out;
+        }
+
+        .cake.cut .cake-piece-left {
+            transform: translateX(-30px) rotate(-5deg);
+        }
+
+        .cake.cut .cake-piece-right {
+            transform: translateX(30px) rotate(5deg);
+        }
+
+        /* Instructions */
+        .instructions {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            color: #8B4513;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .instructions.hidden {
+            opacity: 0;
+        }
+
+        /* Celebration Message */
+        .celebration {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Jolly Lodger', cursive;
+            font-size: 3rem;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            text-align: center;
+        }
+
+        .celebration.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Date under celebration */
+        .celebration-date {
+            font-family: 'Jolly Lodger', cursive;
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-top: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* Sparkles around cake */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #FFD700, transparent);
+            border-radius: 50%;
+            animation: sparkleAround 3s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes sparkleAround {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Images -->
+    <div class="background-image bg-before" id="bgBefore"></div>
+    <div class="background-image bg-after" id="bgAfter"></div>
+
+    <!-- Celebration Audio -->
+    <audio id="celebrationSound" preload="auto">
+        <source src="hurray.mp3" type="audio/mpeg">
+        <source src="hurray.wav" type="audio/wav">
+        <source src="hurray.ogg" type="audio/ogg">
+        <!-- Add your downloaded hurray sound here -->
+    </audio>
+
+    <div class="instructions" id="instructions">
+        Click the flame to blow out the candle! 🕯️
+    </div>
+
+    <div class="cake-container">
+        <div class="cake" id="cake">
+            <!-- Cake Plate -->
+            <div class="cake-plate"></div>
+            
+            <!-- Bottom Layer -->
+            <div class="cake-layer-bottom cake-piece-left">
+                <div class="frosting-bottom"></div>
+            </div>
+            <div class="cake-layer-bottom cake-piece-right">
+                <div class="frosting-bottom"></div>
+            </div>
+            
+            <!-- Top Layer -->
+            <div class="cake-layer-top cake-piece-left">
+                <div class="frosting-top"></div>
+                <!-- Decorations -->
+                <div class="decoration"></div>
+                <div class="decoration"></div>
+                <div class="decoration"></div>
+                <div class="decoration"></div>
+                <div class="decoration"></div>
+            </div>
+            <div class="cake-layer-top cake-piece-right">
+                <div class="frosting-top"></div>
+            </div>
+            
+            <!-- Candle -->
+            <div class="candle">
+                <div class="flame" id="flame" onclick="blowCandle()"></div>
+            </div>
+            
+            <!-- Cut Line -->
+            <div class="cut-line" id="cutLine"></div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        Happy Birthday Labiba! 🎉
+        <div class="celebration-date">11 July 2025</div>
+    </div>
+
+    <script>
+        let candleBlown = false;
+        let cakeCut = false;
+
+        function blowCandle() {
+            if (candleBlown) return;
+            candleBlown = true;
+
+            const flame = document.getElementById('flame');
+            const instructions = document.getElementById('instructions');
+            
+            // Blow out the flame
+            flame.classList.add('blown');
+            
+            // Update instructions
+            setTimeout(() => {
+                instructions.innerHTML = 'Now click anywhere on the cake to cut it! 🔪';
+            }, 500);
+            
+            // Change cursor to knife and enable cake cutting
+            setTimeout(() => {
+                document.body.classList.add('knife-cursor');
+                document.getElementById('cake').onclick = cutCake;
+            }, 1000);
+        }
+
+        function cutCake() {
+            if (cakeCut) return;
+            cakeCut = true;
+
+            const cake = document.getElementById('cake');
+            const cutLine = document.getElementById('cutLine');
+            const instructions = document.getElementById('instructions');
+            const celebration = document.getElementById('celebration');
+            const celebrationSound = document.getElementById('celebrationSound');
+            const bgBefore = document.getElementById('bgBefore');
+            const bgAfter = document.getElementById('bgAfter');
+            
+            // Change background
+            bgBefore.classList.add('hide');
+            bgAfter.classList.add('show');
+            
+            // Show cut line
+            cutLine.classList.add('show');
+            
+            // Cut the cake (split animation)
+            setTimeout(() => {
+                cake.classList.add('cut');
+            }, 300);
+            
+            // Hide instructions
+            instructions.classList.add('hidden');
+            
+            // Play celebration sound
+            celebrationSound.play().catch(e => {
+                console.log('Audio play failed:', e);
+            });
+            
+            // Show celebration message
+            setTimeout(() => {
+                celebration.classList.add('show');
+                createSparkles();
+            }, 800);
+            
+            // Remove knife cursor
+            document.body.classList.remove('knife-cursor');
+            document.getElementById('cake').onclick = null;
+        }
+
+        function createSparkles() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * 100 + '%';
+                    sparkle.style.top = Math.random() * 100 + '%';
+                    sparkle.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Prevent right-click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Add some ambient sparkles around the cake initially
+        setTimeout(() => {
+            setInterval(() => {
+                if (!cakeCut) {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = (40 + Math.random() * 20) + '%';
+                    sparkle.style.top = (40 + Math.random() * 20) + '%';
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 3000);
+                }
+            }, 2000);
+        }, 1000);
+    </script>
+</body>
+</html>
